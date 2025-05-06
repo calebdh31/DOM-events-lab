@@ -7,28 +7,62 @@
 // As a user, I want to be able to clear all operations and start from 0.
 
 /*-------------------------------- Constants --------------------------------*/
-const calculator = document.querySelector('#calculator')
-const buttons = document.querySelectorAll('.button-number')
+const operatorButtons = document.querySelectorAll('.button.operator')
+const equalsButton = document.querySelector('.button.equals')
+const numberButtons = document.querySelectorAll('.button.number')
+const display = document.querySelector('.display')
+
+    let currentInput = ''
+    let resultShown = false
 /*-------------------------------- Variables --------------------------------*/
 
 /*------------------------ Cached Element References ------------------------*/
 
 /*----------------------------- Event Listeners -----------------------------*/
-buttons.forEach((button) => {
-    button.addEventListener('click', (event) => {
-        console.log(event.target.innerText)
+
+/*-------------------------------- Functions --------------------------------*/
+
+document.addEventListener("DOMContentLoaded", () => {
+    numberButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (resultShown) {
+                currentInput = ''
+                resultShown = false
+            }
+            currentInput += button.textContent.trim()
+            display.textContent = currentInput
+        })
     })
 })
-/*-------------------------------- Functions --------------------------------*/
-const display = document.getElementById("display")
+operatorButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const op = button.textContent.trim()
 
-const appendToDisplay(input) {
-    display.value += input
-}
-const clearDisplay() {
+      if (op === 'C') {
+        currentInput = ''
+        display.textContent = ''
+        return
+      }
 
-}
+      if (resultShown) resultShown = false
 
-const calculate() {
-
-}
+      const lastCharacter = currentInput[currentInput.length - 1]
+      if (['+', '-', '*', '/'].includes(lastCharacter)) {
+        currentInput = currentInput.slice(0, -1)
+      }
+      currentInput += op
+      display.textContent = currentInput
+    })
+})
+equalsButton.addEventListener('click', () => {
+    try {
+        const result = eval(currentInput)
+        display.textContent = result
+        currentInput = result.toString()
+        resultShown = true
+    } catch {
+        display.textContent = 'Error'
+        currentInput = ''
+        resultShown = false
+    }
+})
